@@ -1,22 +1,56 @@
-enum Role { 
-    PATRON
-    LIBRARIAN
+generator client {
+  provider = "prisma-client-js"
 }
-model user {
-    id   Int  @id  @default(autoincrement())
-    email String @unique
-    role Role  @default(PATRON)
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
-model GenreId {
-    id  Int  @id @default(autoincrement())
-    name String @unique
-    books Book[] // This establishes that one genre can have many books
+
+enum Role {
+  PATRON
+  LIBRARIAN
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  role      Role     @default(PATRON)
+  books     Book[]
+  reviews   Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Genre {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  books Book[]
+}
+
 model Book {
-    id  Int   @id @ default (autoincrement())
-    title String
-    author String
-    // This sets up the relationship in Prisma
-    genreld Int
-    genre Genre @relation(fields: [genreId], references: [id])
+  id          Int      @id @default(autoincrement())
+  title       String
+  author      String
+  isbn        String   @unique
+  genreId     Int
+  genre       Genre    @relation(fields: [genreId], references: [id])
+  publishedAt DateTime
+  reviews     Review[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  bookId    Int
+  book      Book     @relation(fields: [bookId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int      // 1–5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([bookId, userId])
+}   
