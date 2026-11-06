@@ -1,1 +1,22 @@
-
+enum Role { 
+    PATRON
+    LIBRARIAN
+}
+model user {
+    id   Int  @id  @default(autoincrement())
+    email String @unique
+    role Role  @default(PATRON)
+}
+model GenreId {
+    id  Int  @id @default(autoincrement())
+    name String @unique
+    books Book[] // This establishes that one genre can have many books
+}
+model Book {
+    id  Int   @id @ default (autoincrement())
+    title String
+    author String
+    // This sets up the relationship in Prisma
+    genreld Int
+    genre Genre @relation(fields: [genreId], references: [id])
+}
