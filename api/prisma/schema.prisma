@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  = env("DATABASE_URL")
 }
 
 enum Role {
@@ -17,7 +16,6 @@ model User {
   name      String
   email     String   @unique
   role      Role     @default(PATRON)
-  books     Book[]
   reviews   Review[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
